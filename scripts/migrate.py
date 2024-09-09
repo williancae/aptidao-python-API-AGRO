@@ -1,32 +1,26 @@
 import asyncio
-import logging
+import os
+import sys
 
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from ..app.config import settings
-from ..app.config.models import Base
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-logger = logging.getLogger()
+
+from app.config.models import Base, import_models_from_modules
+
+import_models_from_modules()
 
 
 async def migrate_tables() -> None:
-    """
-    Migra tabelas no banco de dados.
+    try:
+        print("Creating tables...")
+        engine = create_async_engine("postgresql+asyncpg://postgres:postgres@db:5432/api-agro")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    Esta função cria tabelas no banco de dados usando o método `create_all` do SQLAlchemy.
-    Ela se conecta ao banco de dados usando a `DATABASE_URL` fornecida pelo módulo de configurações.
-    O processo de migração é registrado usando o módulo de log.
-
-    Retorna:
-        None
-    """
-    logger.info("Starting to migrate")
-
-    engine = create_async_engine(settings.DATABASE_URL)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    logger.info("Done migrating")
+    except Exception as e:
+        print("Error message: ", e)
 
 
 if __name__ == "__main__":

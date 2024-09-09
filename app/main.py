@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 
+from app.modules.seed.seed_model import SeedModel
 from app.modules.seed.seed_router import seed_router
+
+SeedModel()
 
 app = FastAPI()
 

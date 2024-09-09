@@ -4,21 +4,21 @@ from typing import Any, List, Optional
 
 class ServiceInterface(ABC):
     @abstractmethod
-    def create(self, params):
-        pass
+    async def create(self, payload):
+        raise NotImplementedError
 
     @abstractmethod
-    def update(self, item_id, params):
-        pass
+    async def update(self, item_id, payload):
+        raise NotImplementedError
 
     @abstractmethod
-    def delete(self, item_id):
-        pass
+    async def delete(self, item_id):
+        raise NotImplementedError
 
     @abstractmethod
-    def get_all(self) -> List:
-        pass
+    async def get_all(self) -> List:
+        raise NotImplementedError
 
     @abstractmethod
-    def get_one(self, item_id) -> Optional[Any]:
-        pass
+    async def get_one(self, item_id) -> Optional[Any]:
+        raise NotImplementedError

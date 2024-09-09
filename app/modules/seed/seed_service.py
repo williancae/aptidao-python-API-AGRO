@@ -1,28 +1,43 @@
+
+
 from typing import List
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from utils.service_interface import ServiceInterface
+from fastapi import HTTPException
 
 from app.modules.seed.seed_model import SeedModel
-from app.modules.seed.seed_schema import SeedSchema
+from app.modules.seed.seed_repository import SeedRepository
+from app.utils.service_interface import ServiceInterface
 
 
 class SeedService(ServiceInterface):
-    def __init__(self, db: AsyncSession):
-        self.db = db
 
-    async def create(self, params):
-        pass
+    def __init__(self, repository: SeedRepository):
+        self.repository = repository
 
-    async def update(self, item_id, params):
-        pass
+    async def create(self, payload: dict) -> SeedModel | None:
+        response = await self.repository.create(payload)
+        return response
 
-    async def delete(self, item_id):
-        pass
+    async def update(self, item_id, payload) -> SeedModel | None:
+        seed = await self.get_one(item_id)
+        if seed:
+            response = await self.repository.update(seed, payload)
+            return response
+        return None
+
+    async def delete(self, item_id) -> None:
+        model = await self.get_one(item_id)
+        if model:
+            await self.repository.soft_delete(model)
 
     async def get_all(self):
-        return await self.db.scalars(select(SeedModel.name))
+        response = await self.repository.filter()
+        return response
 
-    async def get_one(self, item_id) -> SeedSchema | None:
-        return None
+    async def get_one(self, item_id) -> SeedModel | None:
+        response = await self.repository.get(item_id)
+
+        if not response:
+            raise HTTPException(
+                status_code=404, detail="Semente não encontrada pelo ID")
+        return response

@@ -8,10 +8,12 @@ from app.config import settings
 
 logger = logging.getLogger()
 
+engine = create_async_engine(settings.DATABASE_URL)
+factory = async_sessionmaker(engine)
+
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    engine = create_async_engine(settings.DATABASE_URL)
-    factory = async_sessionmaker(engine)
+
     async with factory() as session:
         try:
             yield session
