@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  app-dev:
+    container_name: fastapi_app_dev
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - ./app:/code/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - ENV=development
+    depends_on:
+      - db
+    command: ["fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--reload"]
+
+  app-prod:
+    container_name: fastapi_app_prod
+    build:
+      context: .
+      dockerfile: dockerfile
+    env_file:
+      - .env
+    environment:
+      - ENV=production
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    command: ["fastapi", "run", "app/main.py", "--port", "80"]
+
+  # Serviço PostgreSQL compartilhado entre desenvolvimento e produção
+  db:
+    container_name: postgres
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
