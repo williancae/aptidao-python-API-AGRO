@@ -1,4 +1,3 @@
-import uuid
 from abc import abstractmethod
 from typing import Generic, TypeVar
 
@@ -12,11 +11,11 @@ Model = TypeVar("Model", bound=models.Base)
 class RepositoryInterface(Generic[Model]):
     """Repository interface for performing database queries."""
     @abstractmethod
-    async def create(self, data: dict) -> Model:
+    async def create(self, data) -> Model:
         raise NotImplementedError
 
     @abstractmethod
-    async def get(self, pk: uuid.UUID) -> Model | None:
+    async def get(self, item_id: int) -> Model | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -27,9 +26,9 @@ class RepositoryInterface(Generic[Model]):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, instance: Model, data: dict) -> Model:
+    async def update(self, item_id: int, data) -> Model:
         raise NotImplementedError
 
     @abstractmethod
-    async def soft_delete(self, instance: Model) -> Model:
+    async def soft_delete(self, item_id: int) -> Model:
         raise NotImplementedError

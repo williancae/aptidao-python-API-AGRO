@@ -1,13 +1,6 @@
+from typing import Optional
+
 from pydantic import BaseModel
-
-from app.config.models import BaseSchema
-
-
-class SeedSchema(BaseSchema):
-    name: str
-
-    class Config:
-        from_attributes = True
 
 
 class CreateSeedSchema(BaseModel):
@@ -17,8 +10,8 @@ class CreateSeedSchema(BaseModel):
         from_attributes = True
 
 
-class UpdateSeedSchema(CreateSeedSchema):
-    pass
+class UpdateSeedSchema(BaseModel):
+    name: Optional[str] = "Willian Caetano"
 
     class Config:
         from_attributes = True
